@@ -13,7 +13,7 @@ import retrofit2.Call;
 
 import java.util.List;
 
-public class MongoDBAPI<MyResponse> implements MongoDBService<MyResponse> {
+public class MongoDBAPI implements MongoDBService {
     private final MongoDatabase database;
     private final MongoCollection<GamingAPI> gamingAPICollection;
     private final MongoCollection<User_Info> userCollection;
@@ -100,8 +100,8 @@ public class MongoDBAPI<MyResponse> implements MongoDBService<MyResponse> {
         return null;
     }
 
-    @Override
-    public Call<MyResponse> myMethod(String param1, String param2) {
-        return null;
-    }
+//    @Override
+//    public Call<MyResponse> myMethod(String param1, String param2) {
+//        return null;
+//    }
 }

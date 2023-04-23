@@ -1,6 +1,6 @@
 package com.cs501.finalproject;
 
-import com.cs501.finalproject.DBInterface.MongoDBAPI;
+import com.cs501.finalproject.DBInterface.MongoDBService;
 import com.cs501.finalproject.MongoManager.DatabaseManager;
 import com.squareup.moshi.Moshi;
 import retrofit2.Retrofit;
@@ -20,7 +20,7 @@ public class Main {
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) // Add the call adapter factory here
                 .build();
-        MongoDBAPI myService = retrofit.create(MongoDBAPI.class);
+        MongoDBService myService = retrofit.create(MongoDBService.class);
 
         // Continuously listen for incoming requests
         while (true) {

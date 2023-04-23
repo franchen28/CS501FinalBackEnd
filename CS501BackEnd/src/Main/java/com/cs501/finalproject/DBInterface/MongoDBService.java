@@ -9,7 +9,7 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface MongoDBService<MyResponse> {
+public interface MongoDBService {
     @GET
     Observable<String> getUserPassword(String userName);
 
@@ -32,7 +32,7 @@ public interface MongoDBService<MyResponse> {
     @DELETE("myCollection/{id}")
     Call<Void> deleteDocument(@Path("id") String id);
 
-    @GET("my/api/endpoint")
-    Call<MyResponse> myMethod(@Query("param1") String param1, @Query("param2") String param2);
+//    @GET("my/api/endpoint")
+//    Call<MyResponse> myMethod(@Query("param1") String param1, @Query("param2") String param2);
 
 }
