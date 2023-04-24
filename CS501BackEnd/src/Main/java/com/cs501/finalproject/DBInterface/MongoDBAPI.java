@@ -19,7 +19,7 @@ public class MongoDBAPI implements MongoDBService {
     private final MongoCollection<User_Info> userCollection;
 
     public MongoDBAPI(MongoClient mongoClient) {
-        this.database = mongoClient.getDatabase("myDatabase");
+        this.database = mongoClient.getDatabase("Gaming");
         this.gamingAPICollection = database.getCollection("gamingAPIs", GamingAPI .class);
         this.userCollection = database.getCollection("user_info", User_Info .class);
     }
