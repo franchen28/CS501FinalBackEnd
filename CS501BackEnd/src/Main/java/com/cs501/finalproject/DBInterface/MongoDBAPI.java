@@ -3,6 +3,7 @@ package com.cs501.finalproject.DBInterface;
 import com.cs501.finalproject.model.GamingAPI;
 import com.cs501.finalproject.model.User_Info;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.reactivex.Observable;
@@ -18,7 +19,9 @@ public class MongoDBAPI implements MongoDBService {
     private final MongoCollection<GamingAPI> gamingAPICollection;
     private final MongoCollection<User_Info> userCollection;
 
-    public MongoDBAPI(MongoClient mongoClient) {
+    public MongoDBAPI() {
+//        MongoClients MongoClients = null;
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         this.database = mongoClient.getDatabase("Gaming");
         this.gamingAPICollection = database.getCollection("gamingAPIs", GamingAPI .class);
         this.userCollection = database.getCollection("user_info", User_Info .class);
@@ -26,18 +29,27 @@ public class MongoDBAPI implements MongoDBService {
 
     @Override
     public Observable<String> getUserPassword(String userName) {
+        System.out.println("getUserPassword method called with userName: " + userName);
         // Build a query to find the user document with the given name
-        Document query = new Document("name", userName);
-
+        Document query = new Document("username", userName);
+        System.out.println("Query: " + query.toJson()); // Add this line
         // Find the user document and retrieve its password field
         Observable<String> observable = Observable.fromCallable(() -> {
-            User_Info user_info = userCollection.find(query)
-                    .projection(new Document("password", 1))
-                    .first();
-            if (user_info == null) {
-                throw new Exception("User not found.");
+            try {
+                User_Info user_info = userCollection.find(query)
+                        .projection(new Document("password", 1))
+                        .first();
+                if (user_info == null) {
+                    System.out.println("User not found in the database"); // Add this line
+                    throw new Exception("User not found.");
+                }
+                System.out.println("User document: " + user_info.toString());
+                System.out.println("Password: " + user_info.getPassword());
+                return user_info.getPassword();
+            } catch (Exception e) {
+                e.printStackTrace(); // Print the stack trace
+                throw e;
             }
-            return user_info.getPassword();
         }).subscribeOn(Schedulers.io());
 
         // Create a Retrofit call object and return it

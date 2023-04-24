@@ -10,8 +10,8 @@ import retrofit2.http.*;
 import java.util.List;
 
 public interface MongoDBService {
-    @GET
-    Observable<String> getUserPassword(String userName);
+    @GET("/api/user/password")
+    Observable<String> getUserPassword(@Query("username")String userName);
 
     Observable<Document> getDocumentById(String collectionName, String id);
 

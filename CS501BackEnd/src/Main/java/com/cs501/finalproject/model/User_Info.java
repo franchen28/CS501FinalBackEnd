@@ -3,16 +3,16 @@ package com.cs501.finalproject.model;
 import org.bson.types.ObjectId;
 
 public class User_Info {
-    private ObjectId id;
-    private String name;
+    private ObjectId _id;
+    private String username;
     private String password;
 
-    public void setId(ObjectId id){
-        this.id = id;
+    public void setId(ObjectId _id){
+        this._id = _id;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setName(String username){
+        this.username = username;
     }
 
     public void setPassword(String password){
@@ -20,11 +20,11 @@ public class User_Info {
     }
 
     public ObjectId getId(){
-        return this.id;
+        return this._id;
     }
 
-    public String getName(){
-        return this.name;
+    public String getUsername(){
+        return this.username;
     }
 
     public String getPassword(){
