@@ -2,10 +2,7 @@ package com.cs501.finalproject.DBInterface;
 
 import com.cs501.finalproject.model.GamingAPI;
 import com.cs501.finalproject.model.User_Info;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import org.bson.Document;
@@ -21,10 +18,10 @@ public class MongoDBAPI implements MongoDBService {
 
     public MongoDBAPI() {
 //        MongoClients MongoClients = null;
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoClient mongoClient = MongoDBConnection.createMongoClient("mongodb://localhost:27017");
         this.database = mongoClient.getDatabase("Gaming");
-        this.gamingAPICollection = database.getCollection("gamingAPIs", GamingAPI .class);
-        this.userCollection = database.getCollection("user_info", User_Info .class);
+        this.gamingAPICollection = database.getCollection("GamingAPI", GamingAPI.class);
+        this.userCollection = database.getCollection("User_Info", User_Info.class);
     }
 
     @Override
@@ -63,13 +60,19 @@ public class MongoDBAPI implements MongoDBService {
 
     @Override
     public Observable<User_Info> createUser(String name, String password) {
+        Document query = new Document("username", name);
+        User_Info user_info = userCollection.find(query)
+                .projection(new Document("password", 1))
+                .first();
+        if (user_info != null) {
+            return Observable.error(new Exception("User with the given username already exists."));
+        }
         User_Info user = new User_Info();
         user.setId(new ObjectId());
-        user.setName(name);
+        user.setUsername(name);
         user.setPassword(password);
-
+        userCollection.insertOne(user);
         return Observable.fromCallable(() -> {
-            userCollection.insertOne(user);
             return user;
         });
     }

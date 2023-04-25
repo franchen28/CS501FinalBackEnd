@@ -7,11 +7,14 @@ public class User_Info {
     private String username;
     private String password;
 
+    public User_Info(){
+
+    }
     public void setId(ObjectId _id){
         this._id = _id;
     }
 
-    public void setName(String username){
+    public void setUsername(String username){
         this.username = username;
     }
 

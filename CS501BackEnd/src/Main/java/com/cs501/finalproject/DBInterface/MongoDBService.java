@@ -14,7 +14,7 @@ public interface MongoDBService {
     Observable<String> getUserPassword(@Query("username")String userName);
 
     Observable<Document> getDocumentById(String collectionName, String id);
-
+    @POST("/api/user/create")
     Observable<User_Info> createUser(String name, String password);
 
     @GET("myCollection")
