@@ -21,7 +21,7 @@ public class Main {
         // Initialize ServiceClient and set base URL
         Moshi moshi = new Moshi.Builder().build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:4567/")
+                .baseUrl("http://localhost:8080/")
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) // Add the call adapter factory here
                 .build();

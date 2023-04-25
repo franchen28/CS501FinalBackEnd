@@ -21,10 +21,11 @@ public class MongoDBAPI implements MongoDBService {
 
     public MongoDBAPI() {
 //        MongoClients MongoClients = null;
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoClient mongoClient = MongoDBConnection.createMongoClient("mongodb+srv://mongo:dGorupYDungrHKbB@cluster0.ebclkcv.mongodb.net/test");
+
         this.database = mongoClient.getDatabase("Gaming");
-        this.gamingAPICollection = database.getCollection("gamingAPIs", GamingAPI .class);
-        this.userCollection = database.getCollection("user_info", User_Info .class);
+        this.gamingAPICollection = database.getCollection("GamingAPI", GamingAPI .class);
+        this.userCollection = database.getCollection("User_Info", User_Info .class);
     }
 
     @Override
