@@ -2,13 +2,16 @@ package com.cs501.finalproject.model;
 
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User_Info {
     private ObjectId _id;
     private String username;
     private String password;
-
+    private List<String> favorite;
     public User_Info(){
-
+        this.favorite=new ArrayList<>();
     }
     public void setId(ObjectId _id){
         this._id = _id;
@@ -32,5 +35,11 @@ public class User_Info {
 
     public String getPassword(){
         return this.password;
+    }
+    public List<String> getFavoriteGames(){
+        return this.favorite;
+    }
+    public void addGame(String game){
+        this.favorite.add(game);
     }
 }

@@ -3,25 +3,28 @@ package com.cs501.finalproject.DBInterface;
 import com.cs501.finalproject.model.GamingAPI;
 import com.cs501.finalproject.model.User_Info;
 import com.mongodb.client.*;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import retrofit2.Call;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MongoDBAPI implements MongoDBService {
     private final MongoDatabase database;
     private final MongoCollection<GamingAPI> gamingAPICollection;
     private final MongoCollection<User_Info> userCollection;
-
+    private final MongoCollection<Document> userCollection1;
     public MongoDBAPI() {
 //        MongoClients MongoClients = null;
-        MongoClient mongoClient = MongoDBConnection.createMongoClient("mongodb://localhost:27017");
+        MongoClient mongoClient = MongoDBConnection.createMongoClient("mongodb+srv://mongo:dGorupYDungrHKbB@cluster0.ebclkcv.mongodb.net/test");
         this.database = mongoClient.getDatabase("Gaming");
         this.gamingAPICollection = database.getCollection("GamingAPI", GamingAPI.class);
         this.userCollection = database.getCollection("User_Info", User_Info.class);
+        this.userCollection1 = database.getCollection("User_Info");
     }
 
     @Override
@@ -52,7 +55,81 @@ public class MongoDBAPI implements MongoDBService {
         // Create a Retrofit call object and return it
         return observable;
     }
+    @Override
+    public Observable<List<String>> getGamesByPlatform(String platform) {
+        return Observable.create(emitter -> {
+            try {
+                List<String> gameNames = new ArrayList<>();
+                for (GamingAPI document : gamingAPICollection.find(new Document("gamePlatform", platform))) {
+                    String gameName = document.getGameName();
+                    gameNames.add(gameName);
+                }
+                emitter.onNext(gameNames);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+    @Override
+    public Observable<String> getPlatformByGameName(String gameName) {
+        return Observable.create(emitter -> {
+            try {
+                Document query = new Document("gameName", gameName);
+                GamingAPI document = gamingAPICollection.find(query).first();
 
+                if (document != null) {
+                    String platform = document.getGamePlatform();
+                    emitter.onNext(platform);
+                } else {
+                    emitter.onError(new Exception("Game not found."));
+                }
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+    @Override
+    public Observable<String> getAPIByGameName(String gameName) {
+        return Observable.create(emitter -> {
+            try {
+                Document query = new Document("gameName", gameName);
+                GamingAPI document = gamingAPICollection.find(query).first();
+
+                if (document != null) {
+                    String API = document.getAPI();
+                    emitter.onNext(API);
+                } else {
+                    emitter.onError(new Exception("Game not found."));
+                }
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+    @Override
+    public Observable<List<String>> getFavoriteGamesByUsername(String username) {
+        return Observable.create(emitter -> {
+            try {
+                Document query = new Document("username", username);
+                Document userDocument = userCollection1.find(query).first();
+
+                if (userDocument != null) {
+                    List<String> favoriteGames = (ArrayList<String>)userDocument.get("favorite");
+                    System.out.println(favoriteGames);
+                    emitter.onNext(favoriteGames);
+                } else {
+                    emitter.onError(new Exception("User not found."));
+                }
+
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
     @Override
     public Observable<Document> getDocumentById(String collectionName, String id) {
         return null;
@@ -74,6 +151,52 @@ public class MongoDBAPI implements MongoDBService {
         userCollection.insertOne(user);
         return Observable.fromCallable(() -> {
             return user;
+        });
+    }
+    @Override
+    public Completable addGame(String gameName, String gamePlatform, String api) {
+        return Completable.create(emitter -> {
+            try {
+                Document query = new Document("gameName", gameName).append("gamePlatform", gamePlatform);
+                if (gamingAPICollection.countDocuments(query) == 0) {
+                    GamingAPI newgame = new GamingAPI();
+                    newgame.setAPI(api);
+                    newgame.setGameName(gameName);
+                    newgame.setGamePlatform(gamePlatform);
+                    gamingAPICollection.insertOne(newgame);
+                }
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+    @Override
+    public Completable addFavoriteGame(String username, String gameName) {
+        return Completable.create(emitter -> {
+            try {
+                Document query = new Document("username", username);
+                Document userDocument = userCollection1.find(query).first();
+
+                if (userDocument != null) {
+                    // Retrieve the favorite games array from the document
+                    ArrayList<String> favoriteGames = (ArrayList<String>) userDocument.get("favorite");
+
+                    // Check if the gameName already exists in the favorite games list
+                    if (!favoriteGames.contains(gameName)) {
+                        // Update the document by adding the gameName to the favorite games list
+                        userCollection.updateOne(query, new Document("$push", new Document("favorite", gameName)));
+                        emitter.onComplete();
+                    } else {
+                        // Throw an error if the gameName is already present in the list
+                        emitter.onError(new Exception("Game name already exists in the favorites list."));
+                    }
+                } else {
+                    emitter.onError(new Exception("User not found."));
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
         });
     }
 //    @Override
