@@ -55,6 +55,32 @@ public class MongoDBAPI implements MongoDBService {
         // Create a Retrofit call object and return it
         return observable;
     }
+
+
+    @Override
+    public Completable updateUserInfo(String oldUserName, String newUserName, String password, String description) {
+
+        return Completable.create(emitter -> {
+            try {
+                Document query = new Document("username", oldUserName);
+                if (userCollection.countDocuments(query) != 0) {
+                    userCollection.updateOne(
+                            query,
+                            new Document("$set", new Document("username", newUserName)
+                                    .append("password", password)
+                                    .append("description", description))
+                    );
+                    emitter.onComplete();
+                }else {
+                    emitter.onError(new Exception("User not exists"));
+                }
+
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
     @Override
     public Observable<List<String>> getGamesByPlatform(String platform) {
         return Observable.create(emitter -> {
@@ -136,21 +162,23 @@ public class MongoDBAPI implements MongoDBService {
     }
 
     @Override
-    public Observable<User_Info> createUser(String name, String password) {
-        Document query = new Document("username", name);
-        User_Info user_info = userCollection.find(query)
-                .projection(new Document("password", 1))
-                .first();
-        if (user_info != null) {
-            return Observable.error(new Exception("User with the given username already exists."));
-        }
-        User_Info user = new User_Info();
-        user.setId(new ObjectId());
-        user.setUsername(name);
-        user.setPassword(password);
-        userCollection.insertOne(user);
-        return Observable.fromCallable(() -> {
-            return user;
+    public Completable createUser(String name, String password) {
+        return Completable.create(emitter -> {
+            try {
+                Document query = new Document("username", name);
+                System.out.println(name);
+                if (userCollection.countDocuments(query) == 0) {
+                    User_Info user = new User_Info();
+                    user.setUsername(name);
+                    user.setPassword(password);
+                    userCollection.insertOne(user);
+                    emitter.onComplete();
+                } else {
+                emitter.onError(new Exception("User already exists"));
+            }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
         });
     }
     @Override

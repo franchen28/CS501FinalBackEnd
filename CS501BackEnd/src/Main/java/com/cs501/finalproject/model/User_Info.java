@@ -10,8 +10,12 @@ public class User_Info {
     private String username;
     private String password;
     private List<String> favorite;
+
+    private String Description;
+
     public User_Info(){
         this.favorite=new ArrayList<>();
+        this.setDescription("");
     }
     public void setId(ObjectId _id){
         this._id = _id;
@@ -25,6 +29,9 @@ public class User_Info {
         this.password = password;
     }
 
+    public void setDescription(String description){
+        this.Description = description;
+    }
     public ObjectId getId(){
         return this._id;
     }
@@ -41,5 +48,9 @@ public class User_Info {
     }
     public void addGame(String game){
         this.favorite.add(game);
+    }
+
+    public String getDescription(){
+        return this.Description;
     }
 }

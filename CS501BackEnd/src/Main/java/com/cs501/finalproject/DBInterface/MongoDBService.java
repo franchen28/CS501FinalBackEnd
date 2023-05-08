@@ -11,8 +11,12 @@ import retrofit2.http.*;
 import java.util.List;
 
 public interface MongoDBService {
+    @PUT("/api/user/updateUser")
+    Completable updateUserInfo(@Query("oldUsername")String oldUserName,@Query("newUsername")String newUserName, @Query("password")String password, @Query("description")String description);
+
     @GET("/api/user/password")
     Observable<String> getUserPassword(@Query("username")String userName);
+
     @GET("/api/gamesapi/games")
     Observable<List<String>> getGamesByPlatform(@Query("platform") String platform);
     @GET("/api/gamesapi/platform")
@@ -24,7 +28,7 @@ public interface MongoDBService {
 
     Observable<Document> getDocumentById(String collectionName, String id);
     @POST("/api/user/create")
-    Observable<User_Info> createUser(String name, String password);
+    Completable createUser(String name, String password);
     @POST("/api/user/addgame")
     Completable addFavoriteGame(String username, String gameName);
     @POST("/api/gamesapi/addgame")

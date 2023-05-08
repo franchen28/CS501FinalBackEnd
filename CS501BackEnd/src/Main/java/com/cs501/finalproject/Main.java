@@ -1,6 +1,6 @@
 package com.cs501.finalproject;
 
-import com.cs501.finalproject.DBInterface.MongoDBAPI;
+import com.cs501.finalproject.DBInterface.*;
 import com.cs501.finalproject.DBInterface.MongoDBService;
 import com.cs501.finalproject.model.User_Info;
 import com.google.gson.Gson;
@@ -15,10 +15,11 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
+
+
 import java.util.List;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -67,9 +68,38 @@ public class Main {
             while (res.body() == null) {
                 Thread.sleep(50);
             }
-            System.out.println("aaaa"+res.body());
+            System.out.println("body"+res.body());
             return res.body();
         });
+
+        put("/api/user/updateUser",((req, res) -> {
+            String oldUserName = req.queryParams("oldUsername");
+            String newUserName = req.queryParams("newUsername");
+            String password = req.queryParams("password");
+            String description = req.queryParams("description");
+            Completable updateRes = mongoDBAPI.updateUserInfo(oldUserName, newUserName, password, description);
+            // You can handle the user creation response and error here
+            updateRes.subscribeOn(Schedulers.io())
+                    .subscribe(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            res.status(200);
+                            res.body("User updated successfully.");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            res.status(400);
+                            res.body(e.getMessage());
+                        }
+                    });
+            while (res.body() == null) {
+                Thread.sleep(50);
+            }
+            return res.body();
+        }));
+
+
 
         get("/api/gamesapi/games", (req, res) -> {
             String platform = req.queryParams("platform");
@@ -191,39 +221,31 @@ public class Main {
             }
             return res.body();
         });
+
         post("/api/user/create", (req, res) -> {
             String name = req.queryParams("username");
             String password = req.queryParams("password");
-            Observable<User_Info> userObservable = mongoDBAPI.createUser(name, password);
+            Completable userObservable = mongoDBAPI.createUser(name, password);
 
             // You can handle the user creation response and error here
             userObservable.subscribeOn(Schedulers.io())
-                    .subscribe(new DisposableObserver<User_Info>() {
+                    .subscribe(new DisposableCompletableObserver() {
                         @Override
-                        public void onNext(User_Info user) {
+                        public void onComplete() {
                             res.status(200);
-                            res.type("application/json");
-                            Moshi moshi = new Moshi.Builder().build();
-                            JsonAdapter<User_Info> userAdapter = moshi.adapter(User_Info.class);
-                            res.body(userAdapter.toJson(user));
-                            System.out.println(res.body());
+                            res.body("new User added successfully.");
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             res.status(400);
                             res.body(e.getMessage());
-                            System.out.println(res.body());
-                        }
-
-                        @Override
-                        public void onComplete() {
                         }
                     });
             while (res.body() == null) {
                 Thread.sleep(50);
             }
-            return res;
+            return res.body();
         });
         post("/api/user/addgame", (req, res) -> {
             String username = req.queryParams("username");
