@@ -2,6 +2,7 @@ package com.cs501.finalproject;
 
 import com.cs501.finalproject.DBInterface.*;
 import com.cs501.finalproject.DBInterface.MongoDBService;
+
 import com.cs501.finalproject.model.User_Info;
 import com.google.gson.Gson;
 import com.squareup.moshi.JsonAdapter;
@@ -30,7 +31,7 @@ public class Main {
         // Initialize ServiceClient and set base URL
         Moshi moshi = new Moshi.Builder().build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:8080/")
+                .baseUrl("http://34.130.240.157:8080/")
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) // Add the call adapter factory here
                 .build();

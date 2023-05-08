@@ -1,0 +1,26 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="myproject">
+    <output-path>$PROJECT_DIR$/</output-path>
+    <root id="archive" name="myproject.jar">
+      <element id="directory" name="common">
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$2.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$3.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$4.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$5.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$6.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$7.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$8.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/MyResponse.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/ServiceClient.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/Main$1.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/DBInterface/MongoDBAPI.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/DBInterface/MongoDBConnection.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/DBInterface/MongoDBService.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/model/GamingAPI.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/model/User_Info.class" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/classes/com/cs501/finalproject/MongoManager/DatabaseManager.class" />
+      </element>
+    </root>
+  </artifact>
+</component>

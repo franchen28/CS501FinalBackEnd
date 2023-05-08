@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="bson-4.2.3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/CS501BackEnd/lib/bson-4.2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/CS501BackEnd/lib/mongodb-driver-sync-4.2.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
