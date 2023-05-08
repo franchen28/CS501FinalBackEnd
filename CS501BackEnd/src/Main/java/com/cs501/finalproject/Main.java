@@ -25,6 +25,10 @@ import static spark.Spark.*;
 public class Main {
     public static void main(String[] args) {
 
+        String keystoreFile = "/tmp/keystore.jks";
+        String keystorePassword = "200330";
+
+        secure(keystoreFile, keystorePassword, null,null);
         // Initialize MongoDBAPI with the MongoClient
         MongoDBAPI mongoDBAPI = new MongoDBAPI();
 

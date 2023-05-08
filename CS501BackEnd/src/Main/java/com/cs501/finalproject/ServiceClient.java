@@ -12,7 +12,7 @@ public class ServiceClient<MyRequest> {
         Moshi moshi = new Moshi.Builder().build();
         // Create a Retrofit instance
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:8080/") // Base URL of your REST API
+                .baseUrl("http://34.130.240.157:8080/") // Base URL of your REST API
                 .addConverterFactory(MoshiConverterFactory.create()) // JSON converter
                 .build();
 
