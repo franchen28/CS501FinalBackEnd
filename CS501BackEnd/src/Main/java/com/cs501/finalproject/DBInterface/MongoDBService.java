@@ -35,7 +35,7 @@ MongoDBService {
     @POST("/api/gamesapi/addgame")
     Completable addGame(String gameName, String gamePlatform, String api);
 
-    @DELETE
+    @DELETE("/api/user/deletegame")
     Completable deleteFavoriteGame(String username, String gameName);
 
     @GET("myCollection")

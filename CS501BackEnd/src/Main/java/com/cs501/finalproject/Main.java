@@ -289,7 +289,7 @@ public class Main {
         delete("/api/user/deletegame", (req, res) -> {
             String username = req.queryParams("username");
             String gameName = req.queryParams("gamename");
-            Completable addFavoriteGameCompletable = mongoDBAPI.addFavoriteGame(username, gameName);
+            Completable addFavoriteGameCompletable = mongoDBAPI.deleteFavoriteGame(username, gameName);
             addFavoriteGameCompletable.subscribeOn(Schedulers.io())
                     .subscribe(new DisposableCompletableObserver() {
                         @Override
