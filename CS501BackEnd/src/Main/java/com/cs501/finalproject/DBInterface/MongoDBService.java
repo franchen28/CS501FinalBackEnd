@@ -10,7 +10,8 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface MongoDBService {
+public interface
+MongoDBService {
     @PUT("/api/user/updateUser")
     Completable updateUserInfo(@Query("oldUsername")String oldUserName,@Query("newUsername")String newUserName, @Query("password")String password, @Query("description")String description);
 
@@ -33,6 +34,10 @@ public interface MongoDBService {
     Completable addFavoriteGame(String username, String gameName);
     @POST("/api/gamesapi/addgame")
     Completable addGame(String gameName, String gamePlatform, String api);
+
+    @DELETE
+    Completable deleteFavoriteGame(String username, String gameName);
+
     @GET("myCollection")
     Call<List<Document>> getAllDocuments();
 

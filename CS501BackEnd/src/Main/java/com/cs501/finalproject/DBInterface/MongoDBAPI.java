@@ -7,7 +7,6 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import retrofit2.Call;
 
 import java.util.ArrayList;
@@ -63,7 +62,11 @@ public class MongoDBAPI implements MongoDBService {
         return Completable.create(emitter -> {
             try {
                 Document query = new Document("username", oldUserName);
-                if (userCollection.countDocuments(query) != 0) {
+                Document query2 = new Document("username", newUserName);
+                if(userCollection.countDocuments(query) == 0){
+                    emitter.onError(new Exception("User not exist"));
+                }
+                if (userCollection.countDocuments(query2) == 0) {
                     userCollection.updateOne(
                             query,
                             new Document("$set", new Document("username", newUserName)
@@ -72,7 +75,7 @@ public class MongoDBAPI implements MongoDBService {
                     );
                     emitter.onComplete();
                 }else {
-                    emitter.onError(new Exception("User not exists"));
+                    emitter.onError(new Exception("Username already exists"));
                 }
 
             } catch (Exception e) {
@@ -218,6 +221,35 @@ public class MongoDBAPI implements MongoDBService {
                     } else {
                         // Throw an error if the gameName is already present in the list
                         emitter.onError(new Exception("Game name already exists in the favorites list."));
+                    }
+                } else {
+                    emitter.onError(new Exception("User not found."));
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Completable deleteFavoriteGame(String username, String gameName) {
+        return Completable.create(emitter -> {
+            try {
+                Document query = new Document("username", username);
+                Document userDocument = userCollection1.find(query).first();
+
+                if (userDocument != null) {
+                    // Retrieve the favorite games array from the document
+                    ArrayList<String> favoriteGames = (ArrayList<String>) userDocument.get("favorite");
+
+                    // Check if the gameName exists in the favorite games list
+                    if (favoriteGames.contains(gameName)) {
+                        // Update the document by removing the gameName from the favorite games list
+                        userCollection.updateOne(query, new Document("$pull", new Document("favorite", gameName)));
+                        emitter.onComplete();
+                    } else {
+                        // Throw an error if the gameName is not present in the list
+                        emitter.onError(new Exception("Game name not found in the favorites list."));
                     }
                 } else {
                     emitter.onError(new Exception("User not found."));

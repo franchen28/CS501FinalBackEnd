@@ -17,25 +17,33 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 
-
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import static spark.Spark.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.setProperty("https.protocols","TLSv1.2,TLSv1.3");
-        String keystoreFile = "/home/chens28/keystore.jks";
+        String keystoreFile = "/home/chens28/keystore.p12";
         String keystorePassword = "password";
-
+////        SSLUtil.disableCertificateValidation();
         secure(keystoreFile, keystorePassword, null,null);
         // Initialize MongoDBAPI with the MongoClient
+//        port(443);
         MongoDBAPI mongoDBAPI = new MongoDBAPI();
 
         // Initialize ServiceClient and set base URL
         Moshi moshi = new Moshi.Builder().build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://34.130.240.157:8080/")
+                .baseUrl("https://cs501andriodsquad.com:443/")
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) // Add the call adapter factory here
                 .build();
@@ -277,6 +285,33 @@ public class Main {
             }
             return res.body();
         });
+
+        delete("/api/user/deletegame", (req, res) -> {
+            String username = req.queryParams("username");
+            String gameName = req.queryParams("gamename");
+            Completable addFavoriteGameCompletable = mongoDBAPI.addFavoriteGame(username, gameName);
+            addFavoriteGameCompletable.subscribeOn(Schedulers.io())
+                    .subscribe(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            res.status(200);
+                            res.body("Favorite game deleted successfully.");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            res.status(400);
+                            res.body(e.getMessage());
+                        }
+                    });
+
+            // Wait for the completable to complete and return the response
+            while (res.body() == null) {
+                Thread.sleep(50);
+            }
+            return res.body();
+        });
+
         post("/api/gamesapi/addgame", (req, res) -> {
             String gameName = req.queryParams("gamename");
             String gamePlatform = req.queryParams("platform");
