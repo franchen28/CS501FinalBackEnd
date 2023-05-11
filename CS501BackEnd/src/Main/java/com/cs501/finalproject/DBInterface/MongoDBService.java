@@ -12,6 +12,9 @@ import java.util.List;
 
 public interface
 MongoDBService {
+    @GET("/api/user/description")
+    Observable<String> getUserDescription(String userName);
+
     @PUT("/api/user/updateUser")
     Completable updateUserInfo(@Query("oldUsername")String oldUserName,@Query("newUsername")String newUserName, @Query("password")String password, @Query("description")String description);
 
@@ -26,6 +29,7 @@ MongoDBService {
     Observable<String> getAPIByGameName(@Query("gamename")String gameName);
     @GET("/api/user/password")
     Observable<List<String>> getFavoriteGamesByUsername(@Query("username")String username);
+
 
     Observable<Document> getDocumentById(String collectionName, String id);
     @POST("/api/user/create")

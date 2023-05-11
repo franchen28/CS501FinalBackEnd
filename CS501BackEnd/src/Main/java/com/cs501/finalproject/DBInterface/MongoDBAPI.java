@@ -54,6 +54,35 @@ public class MongoDBAPI implements MongoDBService {
         // Create a Retrofit call object and return it
         return observable;
     }
+    @Override
+    public Observable<String> getUserDescription(String userName) {
+        // Build a query to find the user document with the given name
+        Document query = new Document("username", userName);
+        // Find the user document and retrieve its password field
+        Observable<String> observable = Observable.fromCallable(() -> {
+            try {
+                User_Info user_info = userCollection.find(query)
+                        .projection(new Document("description", 1))
+                        .first();
+                if (user_info == null) {
+                    System.out.println("User not found in the database"); // Add this line
+                    throw new Exception("User not found.");
+                }
+                String res = user_info.getDescription();
+                if(res == null){
+                    res = "";
+                }
+                return res;
+            } catch (Exception e) {
+                e.printStackTrace(); // Print the stack trace
+                throw e;
+            }
+        }).subscribeOn(Schedulers.io());
+
+        // Create a Retrofit call object and return it
+        return observable;
+    }
+
 
 
     @Override
@@ -146,7 +175,12 @@ public class MongoDBAPI implements MongoDBService {
                 Document userDocument = userCollection1.find(query).first();
 
                 if (userDocument != null) {
-                    List<String> favoriteGames = (ArrayList<String>)userDocument.get("favorite");
+                    List<String> favoriteGames;
+                    if(userDocument.get("favorite")==null){
+                        favoriteGames=new ArrayList<>();
+                    }else{
+                        favoriteGames = (ArrayList<String>)userDocument.get("favorite");
+                    }
                     System.out.println(favoriteGames);
                     emitter.onNext(favoriteGames);
                 } else {
@@ -211,7 +245,16 @@ public class MongoDBAPI implements MongoDBService {
 
                 if (userDocument != null) {
                     // Retrieve the favorite games array from the document
-                    ArrayList<String> favoriteGames = (ArrayList<String>) userDocument.get("favorite");
+                    System.out.println(userDocument.get("favorite"));
+                    ArrayList<String> favoriteGames;
+
+                    // Check if the favorite games array is present and not null
+                    if (userDocument.get("favorite") != null) {
+                        favoriteGames = (ArrayList<String>) userDocument.get("favorite");
+                    } else {
+                        // Create a new ArrayList if the favorite games array is not present or null
+                        favoriteGames = new ArrayList<>();
+                    }
 
                     // Check if the gameName already exists in the favorite games list
                     if (!favoriteGames.contains(gameName)) {

@@ -11,10 +11,10 @@ public class User_Info {
     private String password;
     private List<String> favorite;
 
-    private String Description;
+    private String description;
 
     public User_Info(){
-        this.favorite=new ArrayList<>();
+        this.favorite=new ArrayList<String>();
         this.setDescription("");
     }
     public void setId(ObjectId _id){
@@ -30,7 +30,7 @@ public class User_Info {
     }
 
     public void setDescription(String description){
-        this.Description = description;
+        this.description = description;
     }
     public ObjectId getId(){
         return this._id;
@@ -51,6 +51,6 @@ public class User_Info {
     }
 
     public String getDescription(){
-        return this.Description;
+        return this.description;
     }
 }

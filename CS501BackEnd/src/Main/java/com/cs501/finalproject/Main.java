@@ -85,6 +85,40 @@ public class Main {
             return res.body();
         });
 
+        get("/api/user/description", (req, res) -> {
+            String userName = req.queryParams("username");
+            Observable<String> descriptionObservable = mongoDBAPI.getUserDescription(userName);
+            descriptionObservable.subscribeOn(Schedulers.io())
+                    .subscribe(new DisposableObserver<String>() {
+                        @Override
+                        public void onNext(String description) {
+                            System.out.println(description);
+                            res.status(200);
+                            res.type("application/json");
+                            res.body(description);
+                            System.out.println("Response body: " + res.body());
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            res.status(404);
+                            res.body("User not found.");
+                        }
+
+                        @Override
+                        public void onComplete() {
+                        }
+                    });
+            //while (passwordObservable.subscribeOn(Schedulers.io()).blockingFirst() == null) {
+            //Thread.sleep(50);
+            //}
+            while (res.body() == null) {
+                Thread.sleep(50);
+            }
+            System.out.println("body"+res.body());
+            return res.body();
+        });
+
         put("/api/user/updateUser",((req, res) -> {
             String oldUserName = req.queryParams("oldUsername");
             String newUserName = req.queryParams("newUsername");
@@ -260,6 +294,7 @@ public class Main {
             }
             return res.body();
         });
+
         post("/api/user/addgame", (req, res) -> {
             String username = req.queryParams("username");
             String gameName = req.queryParams("gamename");
